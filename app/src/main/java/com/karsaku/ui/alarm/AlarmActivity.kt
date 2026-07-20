@@ -30,7 +30,7 @@ class AlarmActivity : ComponentActivity() {
     private val autoDismissRunnable = Runnable { dismissAlarm() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate()
+        super.onCreate(savedInstanceState)
 
         // Turn screen on & show on lock screen
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
