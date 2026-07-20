@@ -17,9 +17,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.outlined.Schedule
-import androidx.compose.material.icons.outlined.Vibration
-import androidx.compose.material.icons.outlined.VolumeUp
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -107,7 +107,7 @@ fun ReminderCard(
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.Schedule,
+                            imageVector = Icons.Default.Schedule,
                             contentDescription = null,
                             modifier = Modifier.size(22.dp),
                             tint = if (reminder.isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
@@ -157,7 +157,7 @@ fun ReminderCard(
                                 horizontalArrangement = Arrangement.spacedBy(2.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Outlined.VolumeUp,
+                                    imageVector = Icons.Default.Notifications,
                                     contentDescription = "Suara",
                                     modifier = Modifier.size(14.dp),
                                     tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
@@ -176,7 +176,7 @@ fun ReminderCard(
                                 horizontalArrangement = Arrangement.spacedBy(2.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Outlined.Vibration,
+                                    imageVector = Icons.Default.NotificationsActive,
                                     contentDescription = "Getar",
                                     modifier = Modifier.size(14.dp),
                                     tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
