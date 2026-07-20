@@ -27,18 +27,11 @@ jobs:
           gradle-version: '8.10.2'
 
       - name: Build Debug APK
-        run: |
-          if ! gradle assembleDebug --stacktrace --no-daemon 2>&1 | tee build.log; then
-            echo "## ❌ Build Failure Details" >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            tail -n 120 build.log >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            exit 1
-          fi
+        run: gradle assembleDebug --stacktrace --no-daemon
 
       - name: Upload Debug APK Artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: KarsaKu-app-debug
-          path: app/build/outputs/apk/debug/
+          path: app/build/outputs/apk/debug/*.apk
