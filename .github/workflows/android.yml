@@ -1,4 +1,4 @@
-name: Build KarsaKu Android APK
+name: Build PesanKu Android APK
 
 on:
   push:
@@ -33,5 +33,5 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: KarsaKu-app-debug
+          name: PesanKu-app-debug
           path: app/build/outputs/apk/debug/*.apk

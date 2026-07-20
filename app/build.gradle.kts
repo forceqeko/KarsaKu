@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.karsaku"
+    namespace = "com.pesanku"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.karsaku"
+        applicationId = "com.pesanku"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
