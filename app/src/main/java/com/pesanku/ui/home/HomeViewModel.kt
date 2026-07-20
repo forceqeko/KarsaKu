@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.pesanku.domain.model.Reminder
-import com.pesanku.domain.model.ReminderCategory
 import com.pesanku.domain.repository.ReminderRepository
 import com.pesanku.util.DateTimeUtils
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +17,7 @@ import java.util.Calendar
 data class HomeUiState(
     val reminders: List<Reminder> = emptyList(),
     val filteredReminders: List<Reminder> = emptyList(),
-    val selectedCategory: ReminderCategory? = null,
+    val selectedCategory: String? = null,
     val isLoading: Boolean = false,
     val greeting: String = "Selamat Datang",
     val nextReminderTime: String? = null
@@ -28,16 +27,16 @@ class HomeViewModel(
     private val repository: ReminderRepository
 ) : ViewModel() {
 
-    private val _selectedCategory = MutableStateFlow<ReminderCategory?>(null)
+    private val _selectedCategory = MutableStateFlow<String?>(null)
 
     val uiState: StateFlow<HomeUiState> = combine(
         repository.getAllReminders(),
         _selectedCategory
     ) { reminders, selectedCat ->
-        val filtered = if (selectedCat == null) {
+        val filtered = if (selectedCat.isNullOrBlank()) {
             reminders
         } else {
-            reminders.filter { it.category == selectedCat }
+            reminders.filter { it.category.equals(selectedCat, ignoreCase = true) }
         }
 
         // Calculate next upcoming active reminder time
@@ -60,7 +59,7 @@ class HomeViewModel(
         initialValue = HomeUiState(isLoading = true)
     )
 
-    fun selectCategory(category: ReminderCategory?) {
+    fun selectCategory(category: String?) {
         _selectedCategory.value = category
     }
 

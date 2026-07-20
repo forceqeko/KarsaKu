@@ -2,6 +2,7 @@ package com.pesanku.ui.addedit
 
 import android.app.TimePickerDialog
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -35,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.pesanku.domain.model.ReminderCategory
 import com.pesanku.ui.components.CategoryChip
 import com.pesanku.ui.components.DaySelector
 import com.pesanku.util.DateTimeUtils
@@ -107,26 +108,62 @@ fun AddEditReminderScreen(
             Text(
                 text = "Kategori",
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onBackground,
+                fontWeight = FontWeight.Bold
             )
+
+            val presetCategories = listOf("Pekerjaan", "Pribadi", "Kesehatan", "Belanja", "Lainnya")
+
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                ReminderCategory.entries.forEach { cat ->
+                presetCategories.forEach { cat ->
+                    val isSelected = !viewModel.isCustomCategorySelected && viewModel.category == cat
                     CategoryChip(
                         category = cat,
-                        isSelected = viewModel.category == cat,
-                        onClick = { viewModel.updateCategory(cat) }
+                        isSelected = isSelected,
+                        onClick = { viewModel.selectPresetCategory(cat) }
                     )
                 }
+
+                // "+ Custom" Category Option
+                CategoryChip(
+                    category = if (viewModel.isCustomCategorySelected && viewModel.customCategoryText.isNotBlank()) {
+                        "✍️ ${viewModel.customCategoryText}"
+                    } else {
+                        "➕ Custom Nama"
+                    },
+                    isSelected = viewModel.isCustomCategorySelected,
+                    onClick = { viewModel.selectCustomCategoryMode() }
+                )
+            }
+
+            // Custom Category Input Field (Shown when Custom is selected)
+            if (viewModel.isCustomCategorySelected) {
+                OutlinedTextField(
+                    value = viewModel.customCategoryText,
+                    onValueChange = { viewModel.updateCustomCategoryText(it) },
+                    label = { Text("Ketik Nama Kategori Kustom *") },
+                    placeholder = { Text("Contoh: Olahraga, Keuangan, Proyek...") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    leadingIcon = {
+                        Icon(imageVector = Icons.Default.Create, contentDescription = null)
+                    },
+                    shape = RoundedCornerShape(12.dp)
+                )
             }
 
             // Time Picker Button
             Text(
                 text = "Waktu Pengingat",
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onBackground,
+                fontWeight = FontWeight.Bold
             )
 
             Card(
@@ -171,7 +208,8 @@ fun AddEditReminderScreen(
             Text(
                 text = "Pengulangan (Ulangi di hari)",
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onBackground,
+                fontWeight = FontWeight.Bold
             )
             Text(
                 text = if (viewModel.repeatDays.isEmpty()) "Satu kali (tanpa pengulangan)" else DateTimeUtils.formatRepeatDays(viewModel.repeatDays),
@@ -188,7 +226,8 @@ fun AddEditReminderScreen(
             Text(
                 text = "Pengaturan Notifikasi",
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onBackground,
+                fontWeight = FontWeight.Bold
             )
 
             Row(

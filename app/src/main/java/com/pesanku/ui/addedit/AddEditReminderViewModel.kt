@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.pesanku.domain.model.Reminder
-import com.pesanku.domain.model.ReminderCategory
 import com.pesanku.domain.repository.ReminderRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -27,7 +26,11 @@ class AddEditReminderViewModel(
         private set
     var minute by mutableIntStateOf(Calendar.getInstance().get(Calendar.MINUTE))
         private set
-    var category by mutableStateOf(ReminderCategory.LAINNYA)
+    var category by mutableStateOf("Pekerjaan")
+        private set
+    var customCategoryText by mutableStateOf("")
+        private set
+    var isCustomCategorySelected by mutableStateOf(false)
         private set
     var repeatDays by mutableStateOf<List<Int>>(emptyList())
         private set
@@ -61,6 +64,12 @@ class AddEditReminderViewModel(
                     oneTimeDate = existing.oneTimeDate
                     soundEnabled = existing.soundEnabled
                     vibrationEnabled = existing.vibrationEnabled
+
+                    val defaultCats = listOf("Pekerjaan", "Pribadi", "Kesehatan", "Belanja", "Lainnya")
+                    if (!defaultCats.contains(existing.category)) {
+                        isCustomCategorySelected = true
+                        customCategoryText = existing.category
+                    }
                 }
             }
         }
@@ -69,7 +78,24 @@ class AddEditReminderViewModel(
     fun updateTitle(value: String) { title = value }
     fun updateMessage(value: String) { message = value }
     fun updateTime(h: Int, m: Int) { hour = h; minute = m }
-    fun updateCategory(cat: ReminderCategory) { category = cat }
+
+    fun selectPresetCategory(cat: String) {
+        isCustomCategorySelected = false
+        category = cat
+    }
+
+    fun selectCustomCategoryMode() {
+        isCustomCategorySelected = true
+        if (customCategoryText.isNotBlank()) {
+            category = customCategoryText.trim()
+        }
+    }
+
+    fun updateCustomCategoryText(value: String) {
+        customCategoryText = value
+        category = value.ifBlank { "Lainnya" }
+    }
+
     fun updateOneTimeDate(dateMillis: Long?) { oneTimeDate = dateMillis }
     fun toggleSound(enabled: Boolean) { soundEnabled = enabled }
     fun toggleVibration(enabled: Boolean) { vibrationEnabled = enabled }
@@ -85,6 +111,12 @@ class AddEditReminderViewModel(
     fun saveReminder() {
         if (title.isBlank()) return
 
+        val finalCategory = if (isCustomCategorySelected && customCategoryText.isNotBlank()) {
+            customCategoryText.trim()
+        } else {
+            category.ifBlank { "Lainnya" }
+        }
+
         viewModelScope.launch {
             val reminder = Reminder(
                 id = reminderId ?: 0,
@@ -92,7 +124,7 @@ class AddEditReminderViewModel(
                 message = message.trim(),
                 hour = hour,
                 minute = minute,
-                category = category,
+                category = finalCategory,
                 repeatDays = repeatDays,
                 oneTimeDate = if (repeatDays.isEmpty()) oneTimeDate else null,
                 isActive = true,

@@ -11,25 +11,45 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.pesanku.domain.model.ReminderCategory
 import com.pesanku.ui.theme.CategoryLainnyaColor
 import com.pesanku.ui.theme.CategoryPekerjaanColor
 import com.pesanku.ui.theme.CategoryPribadiColor
+import java.util.Locale
+
+fun getCategoryColor(categoryName: String): Color {
+    return when (categoryName.trim().lowercase(Locale.getDefault())) {
+        "pekerjaan", "work" -> CategoryPekerjaanColor
+        "pribadi", "personal" -> CategoryPribadiColor
+        "kesehatan", "health" -> Color(0xFF00997A) // Teal Green
+        "belanja", "shopping" -> Color(0xFFE67E22) // Orange
+        "tugas", "task" -> Color(0xFF2980B9) // Blue
+        "lainnya", "other" -> CategoryLainnyaColor
+        else -> {
+            val hash = categoryName.trim().hashCode()
+            val colors = listOf(
+                Color(0xFF5B4FCF),
+                Color(0xFFE84670),
+                Color(0xFF00997A),
+                Color(0xFFE67E22),
+                Color(0xFF8E44AD),
+                Color(0xFF2980B9),
+                Color(0xFFD35400)
+            )
+            colors[kotlin.math.abs(hash) % colors.size]
+        }
+    }
+}
 
 @Composable
 fun CategoryChip(
-    category: ReminderCategory,
+    category: String,
     isSelected: Boolean = false,
     onClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    val categoryColor = when (category) {
-        ReminderCategory.PEKERJAAN -> CategoryPekerjaanColor
-        ReminderCategory.PRIBADI -> CategoryPribadiColor
-        ReminderCategory.LAINNYA -> CategoryLainnyaColor
-    }
-
+    val categoryColor = getCategoryColor(category)
     val backgroundColor = if (isSelected) categoryColor else categoryColor.copy(alpha = 0.15f)
     val textColor = if (isSelected) Color.White else categoryColor
 
@@ -43,9 +63,10 @@ fun CategoryChip(
             .padding(horizontal = 10.dp, vertical = 4.dp)
     ) {
         Text(
-            text = category.displayName,
+            text = category,
             style = MaterialTheme.typography.labelSmall,
-            color = textColor
+            color = textColor,
+            fontWeight = FontWeight.SemiBold
         )
     }
 }

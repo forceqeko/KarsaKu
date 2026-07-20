@@ -17,15 +17,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.Card
@@ -47,12 +44,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.pesanku.domain.model.ReminderCategory
 import com.pesanku.ui.components.EmptyStateView
 import com.pesanku.ui.components.ReminderCard
 import kotlinx.coroutines.launch
@@ -67,20 +62,13 @@ fun HomeScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    val headerGradient = Brush.linearGradient(
-        colors = listOf(
-            Color(0xFF5B4FCF), // Deep Indigo
-            Color(0xFF8B0F3E)  // Vibrant Magenta Accent
-        )
-    )
-
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddClick,
-                containerColor = Color(0xFF5B4FCF),
-                contentColor = Color.White,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
                 shape = RoundedCornerShape(18.dp)
             ) {
                 Icon(
@@ -100,21 +88,23 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             // ==========================================
-            // HERO HEADER BANNER (DESAIN PREMIUM BERSENI)
+            // HERO HEADER BANNER (WARNA SOLID ELEGANKAN SIMPEL)
             // ==========================================
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(headerGradient)
                         .padding(20.dp)
                 ) {
                     Column {
-                        // Row 1: Greeting & App Badge
+                        // Row 1: Greeting & App Tag
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -123,7 +113,7 @@ fun HomeScreen(
                             Text(
                                 text = uiState.greeting,
                                 style = MaterialTheme.typography.headlineMedium,
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 24.sp
                             )
@@ -132,13 +122,13 @@ fun HomeScreen(
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(20.dp))
-                                    .background(Color.White.copy(alpha = 0.2f))
+                                    .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f))
                                     .padding(horizontal = 12.dp, vertical = 6.dp)
                             ) {
                                 Text(
                                     text = "PesanKu",
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onPrimary,
                                     fontWeight = FontWeight.Bold,
                                     letterSpacing = 1.sp
                                 )
@@ -149,7 +139,7 @@ fun HomeScreen(
                         Text(
                             text = "Pengingat pesan di layar & tugas harian Anda.",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White.copy(alpha = 0.85f)
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f)
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
@@ -163,7 +153,7 @@ fun HomeScreen(
                             // Active Reminders Counter Chip
                             Surface(
                                 shape = RoundedCornerShape(14.dp),
-                                color = Color.White.copy(alpha = 0.22f),
+                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.18f),
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Row(
@@ -174,13 +164,13 @@ fun HomeScreen(
                                     Icon(
                                         imageVector = Icons.Outlined.NotificationsActive,
                                         contentDescription = null,
-                                        tint = Color(0xFFFFD9E2),
+                                        tint = MaterialTheme.colorScheme.onPrimary,
                                         modifier = Modifier.size(18.dp)
                                     )
                                     Text(
                                         text = "$activeCount Aktif",
                                         style = MaterialTheme.typography.labelLarge,
-                                        color = Color.White,
+                                        color = MaterialTheme.colorScheme.onPrimary,
                                         fontWeight = FontWeight.Bold
                                     )
                                 }
@@ -190,7 +180,7 @@ fun HomeScreen(
                             if (uiState.nextReminderTime != null) {
                                 Surface(
                                     shape = RoundedCornerShape(14.dp),
-                                    color = Color.White.copy(alpha = 0.22f),
+                                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.18f),
                                     modifier = Modifier.weight(1f)
                                 ) {
                                     Row(
@@ -201,13 +191,13 @@ fun HomeScreen(
                                         Icon(
                                             imageVector = Icons.Outlined.Schedule,
                                             contentDescription = null,
-                                            tint = Color(0xFF00E6B8),
+                                            tint = MaterialTheme.colorScheme.onPrimary,
                                             modifier = Modifier.size(18.dp)
                                         )
                                         Text(
                                             text = "Next: ${uiState.nextReminderTime}",
                                             style = MaterialTheme.typography.labelLarge,
-                                            color = Color.White,
+                                            color = MaterialTheme.colorScheme.onPrimary,
                                             fontWeight = FontWeight.Bold
                                         )
                                     }
@@ -221,8 +211,14 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // ==========================================
-            // CATEGORY FILTER BAR (TABS SCROLLABLE)
+            // CATEGORY FILTER BAR (DINAMIS DARI USER CATEGORIES)
             // ==========================================
+            val availableCategories = remember(uiState.reminders) {
+                val existing = uiState.reminders.map { it.category.trim() }.filter { it.isNotBlank() }.distinct()
+                val defaults = listOf("Pekerjaan", "Pribadi", "Kesehatan", "Belanja", "Lainnya")
+                (defaults + existing).distinct()
+            }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -231,7 +227,7 @@ fun HomeScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // "Semua" Filter Chip
-                val isAllSelected = uiState.selectedCategory == null
+                val isAllSelected = uiState.selectedCategory.isNullOrBlank()
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(14.dp))
@@ -249,21 +245,21 @@ fun HomeScreen(
                     )
                 }
 
-                // Category Chips
-                ReminderCategory.entries.forEach { cat ->
-                    val isSelected = uiState.selectedCategory == cat
-                    val count = uiState.reminders.count { it.category == cat }
+                // Dynamic Category Chips
+                availableCategories.forEach { catName ->
+                    val isSelected = uiState.selectedCategory?.equals(catName, ignoreCase = true) == true
+                    val count = uiState.reminders.count { it.category.equals(catName, ignoreCase = true) }
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(14.dp))
                             .background(
                                 if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
                             )
-                            .clickable { viewModel.selectCategory(cat) }
+                            .clickable { viewModel.selectCategory(catName) }
                             .padding(horizontal = 14.dp, vertical = 8.dp)
                     ) {
                         Text(
-                            text = "${cat.displayName} ($count)",
+                            text = "$catName ($count)",
                             style = MaterialTheme.typography.labelLarge,
                             color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium

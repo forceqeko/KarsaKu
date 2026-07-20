@@ -3,7 +3,6 @@ package com.pesanku.data.local.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.pesanku.domain.model.Reminder
-import com.pesanku.domain.model.ReminderCategory
 
 @Entity(tableName = "reminders")
 data class ReminderEntity(
@@ -32,7 +31,7 @@ data class ReminderEntity(
             message = message,
             hour = hour,
             minute = minute,
-            category = ReminderCategory.fromString(category),
+            category = category.ifBlank { "Lainnya" },
             repeatDays = daysList,
             oneTimeDate = oneTimeDate,
             isActive = isActive,
@@ -50,7 +49,7 @@ data class ReminderEntity(
                 message = reminder.message,
                 hour = reminder.hour,
                 minute = reminder.minute,
-                category = reminder.category.name,
+                category = reminder.category.ifBlank { "Lainnya" },
                 repeatDays = reminder.repeatDays.joinToString(","),
                 oneTimeDate = reminder.oneTimeDate,
                 isActive = reminder.isActive,

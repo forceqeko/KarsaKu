@@ -6,7 +6,7 @@ data class Reminder(
     val message: String,
     val hour: Int,
     val minute: Int,
-    val category: ReminderCategory = ReminderCategory.LAINNYA,
+    val category: String = "Lainnya",
     val repeatDays: List<Int> = emptyList(), // 1 = Mon, 7 = Sun. Empty = one-time
     val oneTimeDate: Long? = null,           // epoch millis for specific date
     val isActive: Boolean = true,
