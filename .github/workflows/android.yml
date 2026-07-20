@@ -27,14 +27,7 @@ jobs:
           gradle-version: '8.10.2'
 
       - name: Build Debug APK
-        run: |
-          gradle assembleDebug --stacktrace --no-daemon > build_log.txt 2>&1 || (
-            echo "### ❌ Build Failure Log" >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            tail -n 120 build_log.txt >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            exit 1
-          )
+        run: gradle assembleDebug --stacktrace --no-daemon
 
       - name: Upload Debug APK Artifact
         if: success()
