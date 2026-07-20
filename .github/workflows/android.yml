@@ -21,22 +21,15 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Gradle
+      - name: Setup Gradle 8.10.2
         uses: gradle/actions/setup-gradle@v4
-
-      - name: Make gradlew executable
-        run: chmod +x gradlew
-
-      - name: Generate Gradle Wrapper JAR
-        run: |
-          gradle wrapper --gradle-version 8.10.2
-          chmod +x gradlew
+        with:
+          gradle-version: '8.10.2'
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace --no-daemon
+        run: gradle assembleDebug --stacktrace --no-daemon
 
       - name: Upload Debug APK Artifact
-        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: KarsaKu-app-debug
