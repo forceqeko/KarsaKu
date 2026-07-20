@@ -28,7 +28,13 @@ jobs:
 
       - name: Build Debug APK
         run: |
-          gradle assembleDebug --stacktrace --no-daemon > build_log.txt 2>&1 || (echo "=== BUILD LOG ERROR TAIL ===" && tail -n 150 build_log.txt && exit 1)
+          gradle assembleDebug --stacktrace --no-daemon > build_log.txt 2>&1 || (
+            echo "### ❌ Build Failure Log" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            tail -n 120 build_log.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            exit 1
+          )
 
       - name: Upload Debug APK Artifact
         if: success()
@@ -36,10 +42,3 @@ jobs:
         with:
           name: KarsaKu-app-debug
           path: app/build/outputs/apk/debug/app-debug.apk
-
-      - name: Upload Build Log on Failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-failure-log
-          path: build_log.txt
