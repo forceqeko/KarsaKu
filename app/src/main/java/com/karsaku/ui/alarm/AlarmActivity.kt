@@ -101,7 +101,8 @@ class AlarmActivity : ComponentActivity() {
             getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         }
 
-        val pattern = longArrayOf(0, 500, 200, 500)
+        // Rhythmic pulse pattern: 400ms vibrate, 400ms pause, 400ms vibrate, 800ms pause
+        val pattern = longArrayOf(0, 400, 400, 400, 800)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator?.vibrate(VibrationEffect.createWaveform(pattern, 0))
         } else {

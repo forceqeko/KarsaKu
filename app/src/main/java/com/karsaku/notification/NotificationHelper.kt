@@ -35,7 +35,7 @@ object NotificationHelper {
                 description = "Notifikasi pengingat layar penuh KarsaKu"
                 setSound(soundUri, audioAttributes)
                 enableVibration(true)
-                vibrationPattern = longArrayOf(0, 500, 200, 500)
+                vibrationPattern = longArrayOf(0, 400, 400, 400, 800)
                 lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             }
 
@@ -85,7 +85,7 @@ object NotificationHelper {
         }
 
         if (vibrationEnabled) {
-            builder.setVibrate(longArrayOf(0, 500, 200, 500))
+            builder.setVibrate(longArrayOf(0, 400, 400, 400, 800))
         } else {
             builder.setVibrate(longArrayOf(0))
         }
