@@ -3,10 +3,10 @@ package com.pesanku.ui.theme
 import androidx.compose.ui.graphics.Color
 
 // Light Colors
-val LightPrimary = Color(0xFF5B4FCF)
+val LightPrimary = Color(0xFF568AC4)
 val LightOnPrimary = Color(0xFFFFFFFF)
-val LightPrimaryContainer = Color(0xFFE8E5FF)
-val LightOnPrimaryContainer = Color(0xFF1B0B80)
+val LightPrimaryContainer = Color(0xFFE3EDF8)
+val LightOnPrimaryContainer = Color(0xFF0F2C4E)
 
 val LightSecondary = Color(0xFFE84670)
 val LightOnSecondary = Color(0xFFFFFFFF)
@@ -45,6 +45,6 @@ val DarkSurfaceVariant = Color(0xFF262640)
 val DarkOnSurfaceVariant = Color(0xFFC7C5D5)
 
 // Category Colors
-val CategoryPekerjaanColor = Color(0xFF5B4FCF)
+val CategoryPekerjaanColor = Color(0xFF568AC4)
 val CategoryPribadiColor = Color(0xFFE84670)
 val CategoryLainnyaColor = Color(0xFF00997A)

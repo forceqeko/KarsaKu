@@ -78,10 +78,10 @@ class HomeViewModel(
     private fun getGreetingByTime(): String {
         val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
         return when (hour) {
-            in 4..10 -> "Selamat Pagi 🌅"
-            in 11..14 -> "Selamat Siang ☀️"
-            in 15..18 -> "Selamat Sore 🌇"
-            else -> "Selamat Malam 🌙"
+            in 4..10 -> "Selamat Pagi"
+            in 11..14 -> "Selamat Siang"
+            in 15..18 -> "Selamat Sore"
+            else -> "Selamat Malam"
         }
     }
 
