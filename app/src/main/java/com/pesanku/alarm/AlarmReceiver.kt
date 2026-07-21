@@ -19,7 +19,7 @@ class AlarmReceiver : BroadcastReceiver() {
             val soundEnabled = intent.getBooleanExtra(AlarmSchedulerImpl.EXTRA_SOUND_ENABLED, true)
             val vibrationEnabled = intent.getBooleanExtra(AlarmSchedulerImpl.EXTRA_VIBRATION_ENABLED, true)
 
-            // 1. Show notification with full-screen intent fallback
+            // Show heads-up notification banner
             NotificationHelper.showAlarmNotification(
                 context = context,
                 reminderId = reminderId,
@@ -28,21 +28,6 @@ class AlarmReceiver : BroadcastReceiver() {
                 soundEnabled = soundEnabled,
                 vibrationEnabled = vibrationEnabled
             )
-
-            // 2. Direct Activity launch to immediately bring AlarmActivity to foreground
-            val alarmIntent = Intent(context, com.pesanku.ui.alarm.AlarmActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                putExtra(AlarmSchedulerImpl.EXTRA_REMINDER_ID, reminderId)
-                putExtra(AlarmSchedulerImpl.EXTRA_REMINDER_TITLE, title)
-                putExtra(AlarmSchedulerImpl.EXTRA_REMINDER_MESSAGE, message)
-                putExtra(AlarmSchedulerImpl.EXTRA_SOUND_ENABLED, soundEnabled)
-                putExtra(AlarmSchedulerImpl.EXTRA_VIBRATION_ENABLED, vibrationEnabled)
-            }
-            try {
-                context.startActivity(alarmIntent)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
 
             // Handle recurring vs one-time update in background
             if (reminderId != -1) {
