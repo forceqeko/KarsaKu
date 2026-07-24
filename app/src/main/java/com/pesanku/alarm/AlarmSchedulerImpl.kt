@@ -29,9 +29,12 @@ class AlarmSchedulerImpl(
 
         // -------------------------------------------------------------
         // ENGINE 1: AlarmManager (Primary Alarm Clock Engine)
+        // Explicitly adding FLAG_INCLUDE_STOPPED_PACKAGES & FLAG_RECEIVER_FOREGROUND
+        // so the broadcast bypasses stopped-package filtering when swiped from recents.
         // -------------------------------------------------------------
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             action = ACTION_TRIGGER_ALARM
+            addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES or Intent.FLAG_RECEIVER_FOREGROUND)
             putExtra(EXTRA_REMINDER_ID, reminder.id)
             putExtra(EXTRA_REMINDER_TITLE, reminder.title)
             putExtra(EXTRA_REMINDER_MESSAGE, reminder.message)
@@ -114,6 +117,7 @@ class AlarmSchedulerImpl(
         // Cancel Engine 1 (AlarmManager)
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             action = ACTION_TRIGGER_ALARM
+            addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES or Intent.FLAG_RECEIVER_FOREGROUND)
         }
         val pendingIntent = PendingIntent.getBroadcast(
             context,
