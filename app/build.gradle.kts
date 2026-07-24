@@ -74,6 +74,9 @@ dependencies {
     // DataStore
     implementation(libs.androidx.datastore.preferences)
 
+    // WorkManager
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
+
     // Google Fonts
     implementation(libs.androidx.ui.text.google.fonts)
 

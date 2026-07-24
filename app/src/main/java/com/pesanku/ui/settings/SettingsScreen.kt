@@ -1,5 +1,11 @@
 package com.pesanku.ui.settings
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.PowerManager
+import android.provider.Settings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,36 +18,60 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import android.os.PowerManager
-import android.content.Context
-import android.provider.Settings
-import android.content.Intent
-import android.net.Uri
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.compose.material3.Button
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.pesanku.domain.model.AppTheme
+
+fun openAutoStartManager(context: Context) {
+    val intents = listOf(
+        // ASUS
+        Intent().setComponent(ComponentName("com.asus.mobilemanager", "com.asus.mobilemanager.autostart.AutoStartActivity")),
+        Intent().setComponent(ComponentName("com.asus.mobilemanager", "com.asus.mobilemanager.entry.FunctionActivity")),
+        // Xiaomi
+        Intent().setComponent(ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity")),
+        // Oppo / Realme
+        Intent().setComponent(ComponentName("com.coloros.safecenter", "com.coloros.safecenter.permission.startup.StartupAppListActivity")),
+        // Vivo
+        Intent().setComponent(ComponentName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.AddWhiteListActivity")),
+        // Samsung
+        Intent().setComponent(ComponentName("com.samsung.android.looper", "com.samsung.android.sm.ui.battery.BatteryActivity"))
+    )
+
+    for (intent in intents) {
+        try {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+            return
+        } catch (e: Exception) {
+            // Try next
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -197,7 +227,7 @@ fun SettingsScreen(
                 mutableStateOf(powerManager.isIgnoringBatteryOptimizations(context.packageName))
             }
 
-            val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+            val lifecycleOwner = LocalLifecycleOwner.current
             DisposableEffect(lifecycleOwner) {
                 val observer = LifecycleEventObserver { _, event ->
                     if (event == Lifecycle.Event.ON_RESUME) {
@@ -222,30 +252,23 @@ fun SettingsScreen(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "Jalankan Tanpa Batasan Baterai",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = if (isIgnoringBatteryOptimizations) 
-                                    "Sudah dikonfigurasi. Aplikasi dapat berjalan di latar belakang tanpa dibatasi oleh sistem hemat baterai."
-                                    else "Sangat direkomendasikan untuk dinonaktifkan agar pengingat dapat terus berjalan tepat waktu meskipun aplikasi dikeluarkan dari recent apps.",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
+                    Text(
+                        text = "Jalankan Tanpa Batasan (HP ASUS / Xiaomi)",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = if (isIgnoringBatteryOptimizations)
+                            "Optimasi baterai telah dimatikan. Untuk HP ASUS / Xiaomi / Oppo, pastikan juga izin Auto-Start diizinkan di pengaturan HP Anda."
+                            else "Diperlukan agar pengingat terus berjalan tepat waktu meskipun aplikasi dikeluarkan dari Recent Apps.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     if (!isIgnoringBatteryOptimizations) {
-                        Spacer(modifier = Modifier.height(12.dp))
                         Button(
                             onClick = {
                                 try {
@@ -265,8 +288,18 @@ fun SettingsScreen(
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text("Matikan Optimasi Baterai")
+                            Text("1. Matikan Optimasi Baterai")
                         }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
+                    OutlinedButton(
+                        onClick = { openAutoStartManager(context) },
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("2. Buka Pengaturan Auto-Start (ASUS/Xiaomi)")
                     }
                 }
             }

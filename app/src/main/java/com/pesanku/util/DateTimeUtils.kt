@@ -10,14 +10,12 @@ object DateTimeUtils {
 
     /**
      * Calculates the next trigger time in epoch milliseconds for a given reminder.
+     * Guarantees returning a timestamp strictly in the future (> now).
      */
     fun calculateNextTriggerTime(reminder: Reminder): Long {
         val now = Calendar.getInstance()
 
         if (reminder.isRecurring) {
-            // Find the closest upcoming day matching one of repeatDays
-            // repeatDays uses Calendar format: 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat, 7=Sun
-            // Note: java.util.Calendar DAY_OF_WEEK is 1=Sun, 2=Mon, 3=Tue, 4=Wed, 5=Thu, 6=Fri, 7=Sat
             val targetDays = reminder.repeatDays.map { toCalendarDayOfWeek(it) }
 
             var candidate = Calendar.getInstance().apply {
@@ -27,7 +25,6 @@ object DateTimeUtils {
                 set(Calendar.MILLISECOND, 0)
             }
 
-            // Check next 7 days for the first matching day & future time
             for (dayOffset in 0..7) {
                 val testCal = (candidate.clone() as Calendar).apply {
                     add(Calendar.DAY_OF_YEAR, dayOffset)
@@ -38,7 +35,6 @@ object DateTimeUtils {
                 }
             }
 
-            // Fallback to 7 days from now if nothing matched
             candidate.add(Calendar.DAY_OF_YEAR, 7)
             return candidate.timeInMillis
         } else {
@@ -51,8 +47,8 @@ object DateTimeUtils {
                 set(Calendar.MILLISECOND, 0)
             }
 
-            // If time has passed today and no specific date set, schedule for tomorrow
-            if (cal.timeInMillis <= now.timeInMillis && reminder.oneTimeDate == null) {
+            // If time has passed, schedule for tomorrow so it never fires in the past
+            if (cal.timeInMillis <= now.timeInMillis) {
                 cal.add(Calendar.DAY_OF_YEAR, 1)
             }
 
@@ -60,9 +56,6 @@ object DateTimeUtils {
         }
     }
 
-    /**
-     * Converts custom day of week (1=Mon, 7=Sun) to java.util.Calendar DAY_OF_WEEK (1=Sun, 2=Mon...7=Sat)
-     */
     private fun toCalendarDayOfWeek(customDay: Int): Int {
         return when (customDay) {
             1 -> Calendar.MONDAY
