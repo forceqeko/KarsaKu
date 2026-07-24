@@ -62,7 +62,7 @@ class ReminderForegroundService : Service() {
         return START_STICKY
     }
 
-    override fun onBind(intent: IBinder?): IBinder? = null
+    override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onDestroy() {
         serviceScope.cancel()
