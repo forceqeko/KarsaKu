@@ -32,7 +32,7 @@ object NotificationHelper {
                 CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "Notifikasi pengingat layar penuh PesanKu"
+                description = "Notifikasi pengingat PesanKu"
                 setSound(soundUri, audioAttributes)
                 enableVibration(true)
                 vibrationPattern = longArrayOf(0, 400, 400, 400, 800)
@@ -52,6 +52,8 @@ object NotificationHelper {
         soundEnabled: Boolean,
         vibrationEnabled: Boolean
     ) {
+        createNotificationChannel(context)
+
         val fullScreenIntent = Intent(context, AlarmActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             putExtra(AlarmSchedulerImpl.EXTRA_REMINDER_ID, reminderId)
@@ -68,15 +70,17 @@ object NotificationHelper {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        val iconRes = if (context.applicationInfo.icon != 0) context.applicationInfo.icon else android.R.drawable.ic_popup_reminder
+
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+            .setSmallIcon(iconRes)
             .setContentTitle(title)
-            .setContentText(message)
+            .setContentText(if (message.isNotBlank()) message else "Pengingat PesanKu")
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setContentIntent(fullScreenPendingIntent)
-            .setFullScreenIntent(fullScreenPendingIntent, true)
             .setAutoCancel(true)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
         if (soundEnabled) {

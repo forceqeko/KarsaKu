@@ -49,11 +49,15 @@
             android:name=".service.ReminderForegroundService"
             android:exported="false"
             android:foregroundServiceType="specialUse"
-            android:stopWithTask="false" />
+            android:stopWithTask="false">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Keep background reminders scheduled and active when app is closed" />
+        </service>
 
         <receiver
             android:name=".alarm.AlarmReceiver"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.pesanku.ACTION_TRIGGER_ALARM" />
             </intent-filter>

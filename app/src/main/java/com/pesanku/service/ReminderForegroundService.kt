@@ -35,8 +35,16 @@ class ReminderForegroundService : Service() {
         const val NOTIFICATION_ID = 1
 
         fun start(context: Context) {
-            val intent = Intent(context, ReminderForegroundService::class.java)
-            context.startForegroundService(intent)
+            try {
+                val intent = Intent(context, ReminderForegroundService::class.java)
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    context.startForegroundService(intent)
+                } else {
+                    context.startService(intent)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
         fun stop(context: Context) {
