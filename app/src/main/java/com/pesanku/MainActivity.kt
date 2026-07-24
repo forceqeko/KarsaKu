@@ -16,10 +16,14 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.pesanku.domain.model.Settings
+import com.pesanku.service.ReminderForegroundService
 import com.pesanku.ui.components.BottomNavBar
 import com.pesanku.ui.navigation.NavGraph
 import com.pesanku.ui.navigation.Screen
 import com.pesanku.ui.theme.PesanKuTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -34,6 +38,9 @@ class MainActivity : ComponentActivity() {
 
         val app = application as PesanKuApp
         val repository = app.container.reminderRepository
+
+        // Ensure the foreground service is running
+        ReminderForegroundService.start(this)
 
         setContent {
             val settings by repository.getSettings().collectAsState(initial = Settings())
@@ -67,6 +74,20 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Every time the user opens the app, reschedule all active alarms
+        // as a safety net in case any were cancelled
+        val app = application as PesanKuApp
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                app.container.reminderRepository.rescheduleAllActiveAlarms()
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
