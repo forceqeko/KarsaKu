@@ -10,6 +10,7 @@ import android.media.AudioAttributes
 import android.media.RingtoneManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import com.pesanku.R
 import com.pesanku.alarm.AlarmSchedulerImpl
 import com.pesanku.ui.alarm.AlarmActivity
 
@@ -70,10 +71,8 @@ object NotificationHelper {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val iconRes = if (context.applicationInfo.icon != 0) context.applicationInfo.icon else android.R.drawable.ic_popup_reminder
-
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(iconRes)
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(title)
             .setContentText(if (message.isNotBlank()) message else "Pengingat PesanKu")
             .setPriority(NotificationCompat.PRIORITY_MAX)

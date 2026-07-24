@@ -11,6 +11,7 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.pesanku.MainActivity
 import com.pesanku.PesanKuApp
+import com.pesanku.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -21,9 +22,6 @@ import kotlinx.coroutines.launch
  * Foreground Service yang menjaga proses aplikasi tetap hidup
  * sehingga AlarmManager PendingIntent tidak dibatalkan oleh sistem
  * saat aplikasi dikeluarkan dari recent apps.
- *
- * Ini adalah pendekatan standar yang digunakan oleh aplikasi alarm/pengingat
- * profesional di Android.
  */
 class ReminderForegroundService : Service() {
 
@@ -48,25 +46,37 @@ class ReminderForegroundService : Service() {
         }
 
         fun stop(context: Context) {
-            val intent = Intent(context, ReminderForegroundService::class.java)
-            context.stopService(intent)
+            try {
+                val intent = Intent(context, ReminderForegroundService::class.java)
+                context.stopService(intent)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
     override fun onCreate() {
         super.onCreate()
         createServiceNotificationChannel()
+        try {
+            val notification = buildServiceNotification()
+            startForeground(NOTIFICATION_ID, notification)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val notification = buildServiceNotification()
-        startForeground(NOTIFICATION_ID, notification)
+        try {
+            val notification = buildServiceNotification()
+            startForeground(NOTIFICATION_ID, notification)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         // Reschedule all active alarms every time the service starts
-        // to ensure nothing is lost
         rescheduleAlarms()
 
-        // START_STICKY ensures the system restarts this service if it gets killed
         return START_STICKY
     }
 
@@ -77,16 +87,19 @@ class ReminderForegroundService : Service() {
         super.onDestroy()
     }
 
-    /**
-     * Called when the system is about to remove the task (swipe from recents).
-     * We reschedule all alarms and restart the service.
-     */
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
         rescheduleAlarms()
-        // Restart self to keep the service alive
-        val restartIntent = Intent(applicationContext, ReminderForegroundService::class.java)
-        applicationContext.startForegroundService(restartIntent)
+        try {
+            val restartIntent = Intent(applicationContext, ReminderForegroundService::class.java)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                applicationContext.startForegroundService(restartIntent)
+            } else {
+                applicationContext.startService(restartIntent)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun rescheduleAlarms() {
@@ -101,17 +114,19 @@ class ReminderForegroundService : Service() {
     }
 
     private fun createServiceNotificationChannel() {
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            CHANNEL_NAME,
-            NotificationManager.IMPORTANCE_LOW  // Low = no sound, minimal visual
-        ).apply {
-            description = "Menjaga pengingat tetap aktif di latar belakang"
-            setShowBadge(false)
-        }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = "Menjaga pengingat tetap aktif di latar belakang"
+                setShowBadge(false)
+            }
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.createNotificationChannel(channel)
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 
     private fun buildServiceNotification(): Notification {
@@ -126,8 +141,8 @@ class ReminderForegroundService : Service() {
         )
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-            .setContentTitle("PesanKu sedang aktif")
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle("PesanKu Aktif")
             .setContentText("Pengingat Anda berjalan di latar belakang")
             .setContentIntent(pendingIntent)
             .setOngoing(true)
